@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — L'Âne Arrosé</title>
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+
+  <!-- ============================================================
+       ÉCRAN DE CONNEXION
+       ============================================================ -->
+  <div id="adm-login">
+    <div class="adm-login-card">
+      <div class="adm-login-logo">🐴</div>
+      <h1 class="adm-login-title">Espace restaurateur</h1>
+      <p class="adm-login-sub">L'Âne Arrosé</p>
+      <form id="adm-login-form" novalidate>
+        <div class="adm-field">
+          <label for="adm-pwd">Mot de passe</label>
+          <input id="adm-pwd" type="password" placeholder="••••••••"
+                 autocomplete="current-password" required />
+        </div>
+        <div id="adm-error" class="adm-error" aria-live="polite"></div>
+        <button type="submit" id="adm-login-btn">Se connecter</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TABLEAU DE BORD (masqué jusqu'à connexion réussie)
+       ============================================================ -->
+  <div id="adm-dashboard" hidden>
+
+    <header id="adm-header">
+      <div class="adm-header-left">
+        <span class="adm-header-logo">🐴</span>
+        <span class="adm-header-name">L'Âne Arrosé</span>
+        <span class="adm-header-badge">Admin</span>
+      </div>
+      <button id="adm-logout">Déconnexion</button>
+    </header>
+
+    <nav id="adm-tabs" role="tablist">
+      <button class="adm-tab active" data-tab="reservations" role="tab"
+              aria-selected="true">📋 Réservations</button>
+      <button class="adm-tab" data-tab="horaires" role="tab"
+              aria-selected="false">🕐 Horaires</button>
+      <button class="adm-tab" data-tab="menu" role="tab"
+              aria-selected="false">🍽️ Menu</button>
+      <button class="adm-tab" data-tab="chatbot" role="tab"
+              aria-selected="false">💬 Chatbot</button>
+    </nav>
+
+    <main id="adm-main">
+
+      <div id="adm-tab-reservations" class="adm-panel" role="tabpanel">
+        <div class="adm-card">
+          <div class="adm-card-title">Réservations reçues</div>
+          <div id="adm-resa-body"></div>
+        </div>
+      </div>
+
+      <div id="adm-tab-horaires" class="adm-panel" role="tabpanel" hidden>
+        <div class="adm-card">
+          <div class="adm-card-title">Horaires d'ouverture</div>
+          <form id="adm-form-horaires">
+            <div id="adm-horaires-grid"></div>
+            <div class="adm-form-footer">
+              <div id="adm-horaires-feedback" class="adm-feedback"></div>
+              <button type="submit" class="adm-btn adm-btn-primary">Enregistrer les horaires</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div id="adm-tab-menu" class="adm-panel" role="tabpanel" hidden>
+        <div class="adm-card">
+          <div class="adm-card-title">Carte du restaurant</div>
+          <div id="adm-menu-sections"></div>
+          <div class="adm-form-footer">
+            <div id="adm-menu-feedback" class="adm-feedback"></div>
+            <button id="adm-btn-save-menu" class="adm-btn adm-btn-primary">Enregistrer le menu</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="adm-tab-chatbot" class="adm-panel" role="tabpanel" hidden>
+        <div class="adm-card">
+          <div class="adm-card-title">Statut du chatbot</div>
+          <div class="adm-toggle-row">
+            <div class="adm-toggle-info">
+              <div class="adm-toggle-label">Widget de chat</div>
+              <div class="adm-toggle-desc">Si désactivé, la bulle de chat n'apparaît pas sur votre site.</div>
+            </div>
+            <label class="adm-toggle" for="adm-chatbot-toggle">
+              <input type="checkbox" id="adm-chatbot-toggle" />
+              <span class="adm-toggle-slider"></span>
+            </label>
+          </div>
+          <div id="adm-chatbot-status" class="adm-toggle-status"></div>
+        </div>
+      </div>
+
+    </main>
+
+  </div><!-- /#adm-dashboard -->
+
+  <script>
+  'use strict';
+
+  /* ----------------------------------------------------------
+     CONSTANTES
+     ---------------------------------------------------------- */
+  var HASH_ADMIN  = 'ac9689e2272427085e35b9d3e3e8bed88cb3434828b43b86fc0596cad4c6e270';
+  var SESSION_KEY = 'ane_admin_auth';
+
+  /* ----------------------------------------------------------
+     SHA-256 via Web Crypto API (natif, sans dépendance)
+     ---------------------------------------------------------- */
+  function sha256(str) {
+    return crypto.subtle
+      .digest('SHA-256', new TextEncoder().encode(str))
+      .then(function (buf) {
+        return Array.from(new Uint8Array(buf))
+          .map(function (b) { return b.toString(16).padStart(2, '0'); })
+          .join('');
+      });
+  }
+
+  /* ----------------------------------------------------------
+     ÉCHAPPEMENT HTML (sécurité)
+     ---------------------------------------------------------- */
+  function esc(str) {
+    return String(str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  /* ----------------------------------------------------------
+     AFFICHER LES RÉSERVATIONS DEPUIS localStorage
+     Clé identique à widget.js : 'ane_reservations'
+     ---------------------------------------------------------- */
+  function chargerReservations() {
+    var body  = document.getElementById('adm-resa-body');
+    var liste = [];
+    try {
+      var raw = localStorage.getItem('ane_reservations');
+      if (raw) { liste = JSON.parse(raw); }
+    } catch (e) {}
+
+    if (!liste.length) {
+      body.innerHTML = '<p class="adm-placeholder">Aucune réservation pour le moment.</p>';
+      return;
+    }
+
+    var html =
+      '<div class="adm-table-wrap"><table class="adm-table"><thead><tr>' +
+      '<th>Reçu le</th><th>Nom</th><th>Date</th><th>Heure</th>' +
+      '<th>Personnes</th><th>Téléphone</th><th>Email</th><th>Message</th>' +
+      '</tr></thead><tbody>';
+
+    liste.forEach(function (r) {
+      html +=
+        '<tr>' +
+        '<td>' + esc(r.recu_le)    + '</td>' +
+        '<td><strong>' + esc(r.nom) + '</strong></td>' +
+        '<td>' + esc(r.date)       + '</td>' +
+        '<td>' + esc(r.heure)      + '</td>' +
+        '<td style="text-align:center">' + esc(r.personnes) + '</td>' +
+        '<td>' + esc(r.telephone)  + '</td>' +
+        '<td>' + esc(r.email)      + '</td>' +
+        '<td class="adm-td-msg">' + esc(r.message) + '</td>' +
+        '</tr>';
+    });
+
+    html += '</tbody></table></div>';
+    body.innerHTML = html;
+  }
+
+  /* ----------------------------------------------------------
+     AFFICHER LE TABLEAU DE BORD
+     ---------------------------------------------------------- */
+  function showDashboard() {
+    document.getElementById('adm-login').style.display = 'none';
+    document.getElementById('adm-dashboard').removeAttribute('hidden');
+    chargerReservations();
+    chargerHoraires();
+    chargerMenu();
+    chargerChatbot();
+  }
+
+  /* ----------------------------------------------------------
+     DONNÉES PAR DÉFAUT — miroir exact de widget.js
+     Déclarées AVANT la vérification de session pour être
+     disponibles dès le premier appel à chargerHoraires/Menu.
+     ---------------------------------------------------------- */
+  var HORAIRES_DEFAUT = {
+    lundi:    { midi: { ouvert: false, debut: '',     fin: ''      }, soir: { ouvert: false, debut: '',    fin: ''      } },
+    mardi:    { midi: { ouvert: true,  debut: '12h',  fin: '14h'   }, soir: { ouvert: false, debut: '',    fin: ''      } },
+    mercredi: { midi: { ouvert: true,  debut: '12h',  fin: '14h'   }, soir: { ouvert: true,  debut: '19h', fin: '22h'   } },
+    jeudi:    { midi: { ouvert: true,  debut: '12h',  fin: '14h'   }, soir: { ouvert: true,  debut: '19h', fin: '22h'   } },
+    vendredi: { midi: { ouvert: true,  debut: '12h',  fin: '14h'   }, soir: { ouvert: true,  debut: '19h', fin: '22h30' } },
+    samedi:   { midi: { ouvert: true,  debut: '12h',  fin: '14h30' }, soir: { ouvert: true,  debut: '19h', fin: '22h30' } },
+    dimanche: { midi: { ouvert: true,  debut: '12h',  fin: '14h30' }, soir: { ouvert: false, debut: '',    fin: ''      } },
+  };
+
+  var MENU_DEFAUT = {
+    entrees:  [
+      { nom: 'Œufs mimosa maison',          prix: '8€'  },
+      { nom: 'Terrine de campagne',          prix: '9€'  },
+      { nom: 'Salade poitevine',             prix: '10€' },
+      { nom: 'Chèvre chaud au miel',         prix: '12€' },
+    ],
+    plats: [
+      { nom: 'Steak frites sauce poivre',    prix: '18€' },
+      { nom: 'Magret de canard',             prix: '22€' },
+      { nom: 'Joue de bœuf braisée',         prix: '20€' },
+      { nom: 'Filet de bar',                 prix: '21€' },
+      { nom: 'Poulet rôti fermier',          prix: '17€' },
+      { nom: 'Mogettes au beurre',           prix: '14€' },
+    ],
+    desserts: [
+      { nom: 'Tarte Tatin maison',           prix: '7€'  },
+      { nom: 'Crème brûlée',                 prix: '6€'  },
+      { nom: 'Fondant au chocolat',          prix: '8€'  },
+      { nom: 'Île flottante',                prix: '6€'  },
+    ],
+  };
+
+  var JOURS_ADM = [
+    ['lundi','Lundi'], ['mardi','Mardi'], ['mercredi','Mercredi'], ['jeudi','Jeudi'],
+    ['vendredi','Vendredi'], ['samedi','Samedi'], ['dimanche','Dimanche'],
+  ];
+
+  var CATEGORIES_ADM = [
+    { cle: 'entrees',  label: 'Entrées'  },
+    { cle: 'plats',    label: 'Plats'    },
+    { cle: 'desserts', label: 'Desserts' },
+  ];
+
+  /* ----------------------------------------------------------
+     VÉRIFICATION SESSION — déjà connecté → on saute le login
+     ---------------------------------------------------------- */
+  if (sessionStorage.getItem(SESSION_KEY) === '1') {
+    showDashboard();
+  }
+
+  /* ----------------------------------------------------------
+     FORMULAIRE DE CONNEXION
+     ---------------------------------------------------------- */
+  document.getElementById('adm-login-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var btn = document.getElementById('adm-login-btn');
+    var err = document.getElementById('adm-error');
+    var pwd = document.getElementById('adm-pwd').value;
+
+    btn.disabled    = true;
+    btn.textContent = 'Vérification…';
+    err.textContent = '';
+
+    sha256(pwd).then(function (hash) {
+      if (hash === HASH_ADMIN) {
+        sessionStorage.setItem(SESSION_KEY, '1');
+        showDashboard();
+      } else {
+        err.textContent = 'Mot de passe incorrect.';
+        btn.disabled    = false;
+        btn.textContent = 'Se connecter';
+        document.getElementById('adm-pwd').select();
+      }
+    });
+  });
+
+  /* ----------------------------------------------------------
+     DÉCONNEXION
+     ---------------------------------------------------------- */
+  document.getElementById('adm-logout').addEventListener('click', function () {
+    sessionStorage.removeItem(SESSION_KEY);
+    location.reload();
+  });
+
+  /* ----------------------------------------------------------
+     NAVIGATION PAR ONGLETS
+     ---------------------------------------------------------- */
+  document.querySelectorAll('.adm-tab').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.adm-tab').forEach(function (t) {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
+      document.querySelectorAll('.adm-panel').forEach(function (p) {
+        p.setAttribute('hidden', '');
+      });
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected', 'true');
+      document.getElementById('adm-tab-' + btn.dataset.tab).removeAttribute('hidden');
+      if (btn.dataset.tab === 'reservations') { chargerReservations(); }
+      if (btn.dataset.tab === 'horaires')     { chargerHoraires(); }
+      if (btn.dataset.tab === 'menu')         { chargerMenu(); }
+      if (btn.dataset.tab === 'chatbot')      { chargerChatbot(); }
+    });
+  });
+
+  /* ----------------------------------------------------------
+     UTILITAIRES
+     ---------------------------------------------------------- */
+  function deepCopy(obj) { return JSON.parse(JSON.stringify(obj)); }
+
+  function showFeedback(id, ok, msg) {
+    var el       = document.getElementById(id);
+    el.textContent = msg;
+    el.className   = 'adm-feedback ' + (ok ? 'ok' : 'ko');
+    setTimeout(function () { el.className = 'adm-feedback'; el.textContent = ''; }, 3000);
+  }
+
+  /* ----------------------------------------------------------
+     ONGLET HORAIRES
+     ---------------------------------------------------------- */
+  function chargerHoraires() {
+    var data;
+    try {
+      var raw = localStorage.getItem('ane_horaires');
+      data = raw ? JSON.parse(raw) : deepCopy(HORAIRES_DEFAUT);
+    } catch (e) { data = deepCopy(HORAIRES_DEFAUT); }
+
+    var grid = document.getElementById('adm-horaires-grid');
+    grid.innerHTML = '';
+
+    JOURS_ADM.forEach(function (paire) {
+      var cle = paire[0], nom = paire[1];
+      var d   = data[cle] || deepCopy(HORAIRES_DEFAUT[cle]);
+      var row = document.createElement('div');
+      row.className = 'adm-horaire-row';
+
+      var jourEl = document.createElement('div');
+      jourEl.className   = 'adm-horaire-jour';
+      jourEl.textContent = nom;
+      row.appendChild(jourEl);
+
+      ['midi', 'soir'].forEach(function (service) {
+        var s       = d[service] || {};
+        var checkId = 'adm-' + cle + '-' + service;
+        var block   = document.createElement('div');
+        block.className = 'adm-horaire-service';
+        block.innerHTML =
+          '<label class="adm-check-label" for="' + checkId + '">' +
+            '<input type="checkbox" id="' + checkId + '"' +
+            ' data-jour="' + cle + '" data-service="' + service +
+            '" class="adm-svc-check"' + (s.ouvert ? ' checked' : '') + '> ' +
+            (service === 'midi' ? 'Midi' : 'Soir') +
+          '</label>' +
+          '<input type="text" class="adm-time-inp"' +
+          ' placeholder="' + (service === 'midi' ? '12h' : '19h') + '"' +
+          ' data-jour="' + cle + '" data-service="' + service + '" data-champ="debut"' +
+          ' value="' + esc(s.debut || '') + '"' + (s.ouvert ? '' : ' disabled') + '>' +
+          '<span class="adm-sep">–</span>' +
+          '<input type="text" class="adm-time-inp"' +
+          ' placeholder="' + (service === 'midi' ? '14h' : '22h') + '"' +
+          ' data-jour="' + cle + '" data-service="' + service + '" data-champ="fin"' +
+          ' value="' + esc(s.fin || '') + '"' + (s.ouvert ? '' : ' disabled') + '>';
+        row.appendChild(block);
+      });
+      grid.appendChild(row);
+    });
+
+    grid.querySelectorAll('.adm-svc-check').forEach(function (cb) {
+      cb.addEventListener('change', function () {
+        grid.querySelectorAll(
+          '[data-jour="' + cb.dataset.jour + '"][data-service="' + cb.dataset.service + '"].adm-time-inp'
+        ).forEach(function (inp) { inp.disabled = !cb.checked; });
+      });
+    });
+  }
+
+  document.getElementById('adm-form-horaires').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var data = {};
+    var grid = document.getElementById('adm-horaires-grid');
+    JOURS_ADM.forEach(function (paire) {
+      var cle = paire[0];
+      data[cle] = {};
+      ['midi', 'soir'].forEach(function (service) {
+        data[cle][service] = {
+          ouvert: grid.querySelector('[data-jour="' + cle + '"][data-service="' + service + '"].adm-svc-check').checked,
+          debut:  grid.querySelector('[data-jour="' + cle + '"][data-service="' + service + '"][data-champ="debut"]').value.trim(),
+          fin:    grid.querySelector('[data-jour="' + cle + '"][data-service="' + service + '"][data-champ="fin"]').value.trim(),
+        };
+      });
+    });
+    localStorage.setItem('ane_horaires', JSON.stringify(data));
+    showFeedback('adm-horaires-feedback', true, 'Horaires enregistrés avec succès.');
+  });
+
+  /* ----------------------------------------------------------
+     ONGLET MENU
+     ---------------------------------------------------------- */
+  function menuItemHtml(cat, item) {
+    return '<div class="adm-menu-item" data-cat="' + cat + '">' +
+      '<input type="text" class="adm-item-nom" placeholder="Nom du plat" value="' + esc(item.nom || '') + '">' +
+      '<input type="text" class="adm-item-prix" placeholder="ex: 14€" value="' + esc(item.prix || '') + '">' +
+      '<button type="button" class="adm-item-delete" aria-label="Supprimer">✕</button>' +
+      '</div>';
+  }
+
+  function bindDeleteBtn(itemEl) {
+    var btn = itemEl.querySelector('.adm-item-delete');
+    if (btn) { btn.addEventListener('click', function () { itemEl.remove(); }); }
+  }
+
+  function chargerMenu() {
+    var data;
+    try {
+      var raw = localStorage.getItem('ane_menu');
+      data = raw ? JSON.parse(raw) : deepCopy(MENU_DEFAUT);
+    } catch (e) { data = deepCopy(MENU_DEFAUT); }
+
+    var container = document.getElementById('adm-menu-sections');
+    container.innerHTML = '';
+
+    CATEGORIES_ADM.forEach(function (cat) {
+      var items   = data[cat.cle] || [];
+      var section = document.createElement('div');
+      section.className   = 'adm-menu-section';
+      section.dataset.cat = cat.cle;
+
+      var html = '<div class="adm-menu-section-title">' + cat.label + '</div>';
+      html    += '<div class="adm-menu-items">';
+      items.forEach(function (item) { html += menuItemHtml(cat.cle, item); });
+      html    += '</div>';
+      html    += '<button type="button" class="adm-btn adm-btn-ghost adm-btn-sm adm-btn-add"' +
+                 ' data-cat="' + cat.cle + '">+ Ajouter un plat</button>';
+
+      section.innerHTML = html;
+      container.appendChild(section);
+
+      section.querySelectorAll('.adm-menu-item').forEach(function (el) { bindDeleteBtn(el); });
+
+      section.querySelector('.adm-btn-add').addEventListener('click', function () {
+        var itemsDiv = section.querySelector('.adm-menu-items');
+        var tmp      = document.createElement('div');
+        tmp.innerHTML = menuItemHtml(cat.cle, { nom: '', prix: '' });
+        var newItem  = tmp.firstElementChild;
+        itemsDiv.appendChild(newItem);
+        bindDeleteBtn(newItem);
+        newItem.querySelector('.adm-item-nom').focus();
+      });
+    });
+  }
+
+  document.getElementById('adm-btn-save-menu').addEventListener('click', function () {
+    var data = {};
+    CATEGORIES_ADM.forEach(function (cat) {
+      data[cat.cle] = [];
+      document.querySelectorAll(
+        '.adm-menu-section[data-cat="' + cat.cle + '"] .adm-menu-item'
+      ).forEach(function (item) {
+        var nom  = item.querySelector('.adm-item-nom').value.trim();
+        var prix = item.querySelector('.adm-item-prix').value.trim();
+        if (nom) { data[cat.cle].push({ nom: nom, prix: prix }); }
+      });
+    });
+    localStorage.setItem('ane_menu', JSON.stringify(data));
+    showFeedback('adm-menu-feedback', true, 'Menu enregistré avec succès.');
+  });
+
+  /* ----------------------------------------------------------
+     ONGLET CHATBOT
+     ---------------------------------------------------------- */
+  function chargerChatbot() {
+    var actif = localStorage.getItem('ane_actif') !== '0';
+    document.getElementById('adm-chatbot-toggle').checked = actif;
+    updateStatutChatbot(actif);
+  }
+
+  function updateStatutChatbot(actif) {
+    var el       = document.getElementById('adm-chatbot-status');
+    el.textContent = actif
+      ? 'Le chatbot est actif — la bulle de chat s\'affiche sur votre site.'
+      : 'Chatbot désactivé — la bulle de chat est masquée sur votre site.';
+    el.className   = 'adm-toggle-status ' + (actif ? 'ok' : 'off');
+  }
+
+  document.getElementById('adm-chatbot-toggle').addEventListener('change', function () {
+    var actif = this.checked;
+    localStorage.setItem('ane_actif', actif ? '1' : '0');
+    updateStatutChatbot(actif);
+  });
+
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>L'Âne Arrosé — Bistrot & Vins Naturels</title>
+
+  <style>
+    /* ======================================================
+       STYLES DE LA PAGE DE DÉMONSTRATION
+       Ce CSS n'a rien à voir avec le widget — il simule
+       juste un site de restaurant existant.
+       ====================================================== */
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      color: #2C1A0E;
+      background: #FAF7F2;
+    }
+
+    /* ------ Navigation ------ */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #722F37;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 40px;
+      height: 64px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+    }
+
+    .nav-logo {
+      color: #C8A96A;
+      font-size: 20px;
+      font-weight: bold;
+      letter-spacing: 0.04em;
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 28px;
+    }
+
+    .nav-links a {
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      font-size: 14px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-family: system-ui, sans-serif;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: #C8A96A; }
+
+    /* ------ Hero ------ */
+    .hero {
+      height: 92vh;
+      background:
+        linear-gradient(
+          160deg,
+          rgba(30, 10, 5, 0.72) 0%,
+          rgba(114, 47, 55, 0.55) 60%,
+          rgba(200, 169, 106, 0.30) 100%
+        ),
+        /* Dégradé qui imite une belle salle de bistrot */
+        repeating-linear-gradient(
+          45deg,
+          #5a2a18 0px, #5a2a18 2px,
+          #4a2012 4px, #4a2012 40px
+        );
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0 24px;
+    }
+
+    .hero-eyebrow {
+      color: #C8A96A;
+      font-family: system-ui, sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .hero h1 {
+      color: white;
+      font-size: clamp(38px, 7vw, 76px);
+      line-height: 1.1;
+      margin-bottom: 20px;
+    }
+
+    .hero-sub {
+      color: rgba(255,255,255,0.78);
+      font-size: 18px;
+      max-width: 520px;
+      line-height: 1.6;
+      margin-bottom: 36px;
+      font-style: italic;
+    }
+
+    .btn-reserve {
+      background: #C8A96A;
+      color: #2C1A0E;
+      padding: 14px 36px;
+      border: none;
+      border-radius: 4px;
+      font-size: 15px;
+      font-family: system-ui, sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+      display: inline-block;
+    }
+
+    .btn-reserve:hover {
+      background: #b8955a;
+      transform: translateY(-1px);
+    }
+
+    /* ------ Sections info ------ */
+    .section {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 72px 24px;
+    }
+
+    .section-title {
+      font-size: 32px;
+      color: #722F37;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .section-sep {
+      width: 48px;
+      height: 2px;
+      background: #C8A96A;
+      margin: 0 auto 40px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 28px 22px;
+      box-shadow: 0 2px 16px rgba(114,47,55,0.08);
+      text-align: center;
+    }
+
+    .card-icon { font-size: 36px; margin-bottom: 14px; }
+    .card h3   { font-size: 17px; margin-bottom: 8px; color: #722F37; }
+    .card p    { font-size: 14px; color: #6B5040; line-height: 1.6; font-family: system-ui, sans-serif; }
+
+    /* ------ Bandeau mémo intégration ------ */
+    .integration-note {
+      background: #2C1A0E;
+      color: #C8A96A;
+      text-align: center;
+      padding: 18px 24px;
+      font-size: 13px;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 0.04em;
+    }
+
+    .integration-note code {
+      background: rgba(200,169,106,0.15);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    /* ------ Footer ------ */
+    footer {
+      background: #2C1A0E;
+      color: rgba(255,255,255,0.5);
+      text-align: center;
+      padding: 32px 24px;
+      font-size: 13px;
+      font-family: system-ui, sans-serif;
+    }
+
+    footer strong { color: #C8A96A; }
+
+    /* ------ Responsive nav ------ */
+    @media (max-width: 600px) {
+      nav { padding: 0 20px; }
+      .nav-links { gap: 16px; }
+      .nav-links a { font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =====================================================
+       SITE DU RESTAURANT (contenu fictif)
+       ===================================================== -->
+
+  <nav>
+    <span class="nav-logo">🐴 L'Âne Arrosé</span>
+    <ul class="nav-links">
+      <li><a href="#">La carte</a></li>
+      <li><a href="#">Vins</a></li>
+      <li><a href="#">Événements</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero">
+    <p class="hero-eyebrow">Bistrot · Vins naturels · Paris 11e</p>
+    <h1>L'Âne<br/>Arrosé</h1>
+    <p class="hero-sub">
+      Une cuisine de marché sincère, des vins vivants,<br/>
+      une salle chaleureuse où l'on revient.
+    </p>
+    <a href="#" class="btn-reserve">Réserver une table</a>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title">Bienvenue chez nous</h2>
+    <div class="section-sep"></div>
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon">🍽️</div>
+        <h3>Cuisine de saison</h3>
+        <p>Ardoise qui change chaque semaine selon les arrivages du marché.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🍷</div>
+        <h3>Vins naturels</h3>
+        <p>Carte composée de vignerons engagés : biodynamie, sans soufre ajouté.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📍</div>
+        <h3>Paris 11e</h3>
+        <p>12 rue de la Fontaine au Roi — Mardi au samedi, midi & soir.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🎉</div>
+        <h3>Privatisation</h3>
+        <p>Séminaires, anniversaires, dîners d'entreprise — jusqu'à 45 couverts.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Note visible uniquement en mode démo -->
+  <div class="integration-note">
+    Intégration widget : <code>&lt;script src="widget.js"&gt;&lt;/script&gt;</code>
+    — 1 seule ligne suffit dans n'importe quel site.
+  </div>
+
+  <footer>
+    &copy; 2026 <strong>L'Âne Arrosé</strong> · Tous droits réservés
+  </footer>
+
+  <!-- =====================================================
+       INTÉGRATION DU WIDGET — C'est la SEULE chose qu'on
+       demande au restaurant d'ajouter dans son site.
+       Juste avant </body>.
+       ===================================================== -->
+  <script src="widget.js?v=3"></script>
+
+</body>
+</html>
