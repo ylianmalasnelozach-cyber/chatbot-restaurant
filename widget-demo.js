@@ -641,7 +641,9 @@
     clearTimeout(tipTimer2);
     hideTooltip();
     document.getElementById("ane-chat-window").classList.add("open");
-    document.getElementById("ane-chat-btn").setAttribute("aria-expanded", "true");
+    var btn = document.getElementById("ane-chat-btn");
+    btn.setAttribute("aria-expanded", "true");
+    btn.style.display = "none";
     setTimeout(function () {
       var input = document.getElementById("ane-chat-input");
       if (input) { input.focus(); }
@@ -650,7 +652,9 @@
 
   function closeChat() {
     document.getElementById("ane-chat-window").classList.remove("open");
-    document.getElementById("ane-chat-btn").setAttribute("aria-expanded", "false");
+    var btn = document.getElementById("ane-chat-btn");
+    btn.setAttribute("aria-expanded", "false");
+    btn.style.display = "";
   }
 
   function toggleChat() {
