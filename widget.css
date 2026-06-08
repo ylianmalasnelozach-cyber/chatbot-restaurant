@@ -53,13 +53,14 @@
   z-index: 9999;
   /* Pulse uniquement quand le chat est fermé */
   animation: ane-pulse 2.8s ease-in-out infinite;
-  transition: transform 0.2s ease, background-color 0.2s ease;
+  transition: transform 0.2s ease, background-color 0.2s ease, opacity 0.2s ease;
 }
 
-/* Arrêt du pulse quand le chat est ouvert */
+/* Disparition du bouton quand le chat est ouvert */
 #ane-chat-btn[aria-expanded="true"] {
   animation: none;
-  box-shadow: 0 6px 24px rgba(123, 31, 46, 0.45);
+  opacity: 0;
+  pointer-events: none;
 }
 
 #ane-chat-btn:hover {
