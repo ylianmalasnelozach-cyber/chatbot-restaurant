@@ -31,38 +31,40 @@
      ---------------------------------------------------------- */
   var REP = {
     horaires:
-      "Voici nos horaires (exemple) :\n\n" +
+      "Voici nos horaires :\n\n" +
       "• Lundi : fermé\n" +
       "• Mardi – Jeudi : midi 12h–14h / soir 19h–22h\n" +
       "• Vendredi – Samedi : midi 12h–14h30 / soir 19h–22h30\n" +
-      "• Dimanche : midi 12h–14h30 (soir fermé)\n\n" +
-      "Ces horaires sont entièrement personnalisables.\n" +
-      "La réservation est conseillée le week-end !",
+      "• Dimanche : midi 12h–14h30 (soir fermé)",
 
     menu:
-      "Voici notre carte (exemple) 🍽️\n\n" +
-      "Entrées (à partir de 8€)\n" +
-      "• Entrée du jour\n" +
-      "• Soupe de saison\n" +
-      "• Assiette de charcuterie\n\n" +
-      "Plats (à partir de 14€)\n" +
-      "• Plat du jour\n" +
-      "• Pièce de viande du boucher\n" +
-      "• Poisson du marché\n\n" +
-      "Desserts (à partir de 6€)\n" +
-      "• Dessert du jour\n" +
-      "• Sélection de fromages affinés\n\n" +
-      "Menu du jour : entrée + plat + dessert\n" +
-      "(La carte s'adapte entièrement à votre restaurant)",
+      "Voici notre carte 🍽️\n\n" +
+      "Entrées (8–12€)\n" +
+      "• Œufs mimosa maison — 8€\n" +
+      "• Terrine de campagne, cornichons — 9€\n" +
+      "• Salade de chèvre chaud au miel — 11€\n" +
+      "• Soupe de saison — 8€\n\n" +
+      "Plats (14–22€)\n" +
+      "• Steak frites, sauce au poivre — 18€\n" +
+      "• Magret de canard, pommes sarladaises — 22€\n" +
+      "• Filet de bar grillé, légumes du marché — 20€\n" +
+      "• Poulet rôti fermier, gratin dauphinois — 17€\n" +
+      "• Risotto aux cèpes — 16€\n\n" +
+      "Desserts (6–8€)\n" +
+      "• Tarte Tatin maison, crème fraîche — 7€\n" +
+      "• Crème brûlée à la vanille — 6€\n" +
+      "• Fondant au chocolat coulant — 7€\n" +
+      "• Sélection de fromages affinés — 8€\n\n" +
+      "Menu du jour : entrée + plat + dessert — 18€",
 
     adresse:
       "Vous nous trouverez ici 📍\n\n" +
-      "Votre adresse\n" +
-      "Votre ville\n\n" +
-      "L'assistant peut afficher votre adresse exacte, vos indications de parking, et tout ce dont vos clients ont besoin.",
+      "12 Place du Marché\n" +
+      "79000 Niort\n\n" +
+      "Parking gratuit place du marché.",
 
     prix:
-      "Voici notre gamme de prix (exemple) :\n\n" +
+      "Voici notre gamme de prix :\n\n" +
       "• Entrées : à partir de 8€\n" +
       "• Plats : à partir de 14€\n" +
       "• Desserts : à partir de 6€\n" +
