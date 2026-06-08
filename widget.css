@@ -32,15 +32,17 @@
 }
 
 /* ----------------------------------------------------------
-   BOUTON FLOTTANT (la bulle ronde en bas à droite)
+   BOUTON FLOTTANT (pilule avec icône + texte permanent)
    ---------------------------------------------------------- */
 #ane-chat-btn {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
+  width: auto;
+  height: 52px;
+  border-radius: 30px;
+  padding: 0 20px 0 14px;
+  gap: 9px;
   background-color: var(--ane-primary);
   color: white;
   border: none;
@@ -62,14 +64,25 @@
 
 #ane-chat-btn:hover {
   background-color: var(--ane-primary-dark);
-  transform: scale(1.12);
+  transform: scale(1.04) translateY(-1px);
 }
 
 #ane-chat-btn svg {
-  width: 27px;
-  height: 27px;
+  width: 24px;
+  height: 24px;
   fill: white;
+  flex-shrink: 0;
   transition: opacity 0.2s, transform 0.2s;
+}
+
+/* Texte permanent à côté de l'icône */
+.ane-btn-label {
+  font-size: 14px;
+  font-weight: 600;
+  font-family: system-ui, sans-serif;
+  white-space: nowrap;
+  color: #ffffff;
+  letter-spacing: 0.01em;
 }
 
 /* ----------------------------------------------------------
@@ -406,6 +419,54 @@
 }
 
 /* ----------------------------------------------------------
+   TOOLTIP D'APPEL (bulle au-dessus du bouton flottant)
+   ---------------------------------------------------------- */
+#ane-tooltip {
+  position: fixed;
+  bottom: 96px;             /* juste au-dessus du bouton (60 + 24 + 12) */
+  right: 16px;
+  max-width: 230px;
+  background: #ffffff;
+  color: #2C1A0E;
+  font-size: 13.5px;
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+  padding: 12px 16px;
+  /* Coin bas-droit pointu → implicitement vers le bouton en dessous */
+  border-radius: 16px 16px 4px 16px;
+  border: 1px solid rgba(123, 31, 46, 0.14);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.13);
+  cursor: pointer;
+  z-index: 9997;
+  user-select: none;
+  /* État initial : invisible */
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition: opacity 0.38s ease, transform 0.38s ease;
+}
+
+/* Apparition */
+#ane-tooltip.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* Disparition (même transition, on retire juste .visible) */
+#ane-tooltip.hiding {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+}
+
+/* Légère surbrillance au survol */
+#ane-tooltip:hover {
+  background: #faf7f2;
+  border-color: rgba(123, 31, 46, 0.28);
+}
+
+/* ----------------------------------------------------------
    RESPONSIVE — MOBILE (écrans ≤ 480px)
    Fenêtre à 95 % de largeur, centrée
    ---------------------------------------------------------- */
@@ -427,5 +488,19 @@
   #ane-chat-btn {
     bottom: 16px;
     right: 16px;
+    height: 48px;
+    padding: 0 16px 0 12px;
+    gap: 8px;
+  }
+
+  .ane-btn-label {
+    font-size: 13px;
+  }
+
+  #ane-tooltip {
+    right: 16px;
+    bottom: 88px;
+    max-width: calc(100vw - 80px);  /* ne déborde pas sur les petits écrans */
+    font-size: 13px;
   }
 }

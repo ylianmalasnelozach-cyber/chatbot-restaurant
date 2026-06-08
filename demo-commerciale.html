@@ -1,0 +1,399 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChatBot Restaurant — Votre assistant disponible 24h/24</title>
+  <style>
+    /* =====================================================
+       Reset & base
+       ===================================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #FFFFFF;
+      color: #1E293B;
+      line-height: 1.6;
+    }
+
+    /* =====================================================
+       HEADER
+       ===================================================== */
+    header {
+      background: #0F172A;
+      padding: 18px 32px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.06);
+    }
+
+    .logo-icon {
+      width: 38px;
+      height: 38px;
+      background: #2563EB;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .logo-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+    }
+
+    .logo-text {
+      font-size: 17px;
+      font-weight: 700;
+      color: #FFFFFF;
+      letter-spacing: -0.01em;
+    }
+
+    .logo-tagline {
+      font-size: 12px;
+      color: rgba(255,255,255,0.50);
+      margin-top: 1px;
+    }
+
+    /* =====================================================
+       HERO
+       ===================================================== */
+    .hero {
+      background: linear-gradient(160deg, #0F172A 0%, #1E3A5F 100%);
+      padding: 88px 24px 96px;
+      text-align: center;
+      color: white;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(37, 99, 235, 0.22);
+      border: 1px solid rgba(96, 165, 250, 0.30);
+      color: #93C5FD;
+      font-size: 12.5px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 30px;
+      margin-bottom: 28px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .hero-badge::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #60A5FA;
+      animation: blink 1.8s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.25; }
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 span {
+      color: #60A5FA;
+    }
+
+    .hero p {
+      font-size: clamp(1rem, 2.5vw, 1.15rem);
+      color: rgba(255,255,255,0.68);
+      max-width: 520px;
+      margin: 0 auto 40px;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: #2563EB;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(37, 99, 235, 0.40);
+    }
+
+    .btn-primary:hover {
+      background: #1D4ED8;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 28px rgba(37, 99, 235, 0.50);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.85);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 15px 30px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.14);
+      transform: translateY(-2px);
+    }
+
+    /* =====================================================
+       AVANTAGES (4 cartes)
+       ===================================================== */
+    .features {
+      padding: 80px 24px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .section-eyebrow {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #2563EB;
+      margin-bottom: 10px;
+    }
+
+    .features h2 {
+      text-align: center;
+      font-size: clamp(1.4rem, 3vw, 1.85rem);
+      font-weight: 800;
+      color: #0F172A;
+      margin-bottom: 10px;
+      letter-spacing: -0.02em;
+    }
+
+    .features-intro {
+      text-align: center;
+      color: #64748B;
+      font-size: 15px;
+      margin-bottom: 52px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 20px;
+    }
+
+    .feature-card {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 18px;
+      padding: 32px 24px;
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.10);
+    }
+
+    .feature-icon {
+      font-size: 2.1rem;
+      margin-bottom: 14px;
+      display: block;
+    }
+
+    .feature-title {
+      font-size: 15.5px;
+      font-weight: 700;
+      color: #0F172A;
+      margin-bottom: 8px;
+    }
+
+    .feature-desc {
+      font-size: 13.5px;
+      color: #64748B;
+      line-height: 1.6;
+    }
+
+    /* =====================================================
+       SECTION DÉMO (CTA central)
+       ===================================================== */
+    .demo-section {
+      background: #EFF6FF;
+      border-top: 1px solid #BFDBFE;
+      border-bottom: 1px solid #BFDBFE;
+      padding: 72px 24px;
+      text-align: center;
+    }
+
+    .demo-section h2 {
+      font-size: clamp(1.3rem, 3vw, 1.7rem);
+      font-weight: 800;
+      color: #0F172A;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    .demo-section p {
+      color: #475569;
+      font-size: 15px;
+      max-width: 480px;
+      margin: 0 auto 32px;
+    }
+
+    .demo-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #94A3B8;
+      margin-top: 20px;
+    }
+
+    .demo-hint svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+      opacity: 0.7;
+    }
+
+    /* =====================================================
+       FOOTER
+       ===================================================== */
+    footer {
+      background: #0F172A;
+      padding: 28px 24px;
+      text-align: center;
+      color: rgba(255,255,255,0.35);
+      font-size: 13px;
+    }
+
+    footer strong {
+      color: rgba(255,255,255,0.60);
+      font-weight: 600;
+    }
+
+    /* =====================================================
+       RESPONSIVE
+       ===================================================== */
+    @media (max-width: 600px) {
+      .hero { padding: 64px 20px 72px; }
+      .features-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 400px) {
+      .features-grid { grid-template-columns: 1fr; }
+      header { padding: 16px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ======================================================
+       HEADER
+       ====================================================== -->
+  <header>
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24"><path d="M20 2H4a2 2 0 00-2 2v18l4-4h14a2 2 0 002-2V4a2 2 0 00-2-2z"/></svg>
+    </div>
+    <div>
+      <div class="logo-text">ChatBot Restaurant</div>
+      <div class="logo-tagline">Votre assistant disponible 24h/24</div>
+    </div>
+  </header>
+
+  <!-- ======================================================
+       HERO
+       ====================================================== -->
+  <section class="hero">
+    <div class="hero-badge">Démonstration en direct</div>
+    <h1>Votre restaurant ne<br><span>dort jamais</span></h1>
+    <p>Un assistant virtuel qui répond à vos clients, prend les réservations et envoie les confirmations — automatiquement, 24h/24.</p>
+    <div class="hero-cta-group">
+      <button class="btn-primary btn-reserve">📅 Faire une réservation test</button>
+      <button class="btn-secondary" onclick="document.querySelector('.features').scrollIntoView({behavior:'smooth'})">Voir les fonctionnalités</button>
+    </div>
+  </section>
+
+  <!-- ======================================================
+       4 AVANTAGES
+       ====================================================== -->
+  <section class="features">
+    <p class="section-eyebrow">Ce que fait l'assistant</p>
+    <h2>Tout ce dont votre restaurant a besoin</h2>
+    <p class="features-intro">Configuré en quelques minutes, il travaille pour vous chaque jour sans interruption.</p>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <span class="feature-icon">🕐</span>
+        <div class="feature-title">Disponible 24h/24, 7j/7</div>
+        <div class="feature-desc">Vos clients obtiennent une réponse instantanée à toute heure — même la nuit, les dimanches et les jours fériés.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">📅</span>
+        <div class="feature-title">Réservations automatiques</div>
+        <div class="feature-desc">Le chatbot guide le client étape par étape : date, heure, nombre de couverts, nom et téléphone.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🍽️</span>
+        <div class="feature-title">Menu et infos instantanés</div>
+        <div class="feature-desc">Horaires, carte, adresse, prix moyens — toutes vos informations accessibles en un clic depuis le chat.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">📧</span>
+        <div class="feature-title">Confirmation par email</div>
+        <div class="feature-desc">Chaque réservation déclenche un email de confirmation automatique pour vous et pour votre client.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================
+       CTA DÉMO
+       ====================================================== -->
+  <section class="demo-section">
+    <h2>Testez l'assistant en direct</h2>
+    <p>Utilisez le bouton ci-dessous ou la bulle en bas à droite pour voir exactement comment vos clients vivront l'expérience.</p>
+    <button class="btn-primary btn-reserve">Démarrer une réservation →</button>
+    <div class="demo-hint">
+      <svg viewBox="0 0 24 24"><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-1-11v6h2v-6h-2zm0-4v2h2V7h-2z"/></svg>
+      Cliquez aussi sur la bulle bordeaux en bas à droite de l'écran
+    </div>
+  </section>
+
+  <!-- ======================================================
+       FOOTER
+       ====================================================== -->
+  <footer>
+    <strong>ChatBot Restaurant</strong> — Solution clé en main pour restaurateurs &nbsp;·&nbsp; Démonstration commerciale
+  </footer>
+
+  <!-- ======================================================
+       WIDGET DÉMO — version neutre sans branding restaurant
+       ====================================================== -->
+  <script src="widget-demo.js"></script>
+
+
+</body>
+</html>

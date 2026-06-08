@@ -1,6 +1,7 @@
 /**
- * Widget Chat — L'Âne Arrosé
- * Inclut le flux de réservation guidé en 6 étapes + envoi Web3Forms.
+ * Widget Chat — Démo commerciale (version neutre)
+ * Aucune référence à un restaurant spécifique.
+ * Basé sur widget.js — ne pas modifier widget.js.
  */
 (function () {
   'use strict';
@@ -9,10 +10,10 @@
      CONFIGURATION
      ---------------------------------------------------------- */
   var CONFIG = {
-    restaurantName: "L'Âne Arrosé",
-    subtitle:       "On vous répond avec plaisir 🐴",
-    avatar:         "🐴",
-    welcomeMessage: "Bonjour 🐴 Bienvenue à L'Âne Arrosé ! Comment puis-je vous aider ?",
+    restaurantName: "Votre Restaurant",
+    subtitle:       "Je réponds à vos clients 24h/24 💬",
+    avatar:         "💬",
+    welcomeMessage: "Bonjour ! 👋 Besoin d'une table ou d'une information ? Je suis là pour vous aider !",
     placeholder:    "Écrivez votre message…",
     cssPath:        "widget.css",
     poweredBy:      "ChatResto",
@@ -21,96 +22,86 @@
 
   /* ----------------------------------------------------------
      WEB3FORMS
-     Remplacer VOTRE_CLE_ICI par la clé obtenue sur web3forms.com
      ---------------------------------------------------------- */
   var WEB3FORMS_KEY    = "552cd89a-c288-4ac7-9cb5-e2efcf0ae4ef";
   var RESTAURANT_EMAIL = "contact@lane-arrose.fr";
 
   /* ----------------------------------------------------------
-     RÉPONSES — données du brief
+     RÉPONSES — données génériques pour la démo
      ---------------------------------------------------------- */
   var REP = {
     horaires:
-      "Voici nos horaires :\n\n" +
+      "Voici nos horaires (exemple) :\n\n" +
       "• Lundi : fermé\n" +
-      "• Mardi : midi 12h–14h (soir fermé)\n" +
-      "• Mercredi–Jeudi : midi 12h–14h / soir 19h–22h\n" +
-      "• Vendredi : midi 12h–14h / soir 19h–22h30\n" +
-      "• Samedi : midi 12h–14h30 / soir 19h–22h30\n" +
+      "• Mardi – Jeudi : midi 12h–14h / soir 19h–22h\n" +
+      "• Vendredi – Samedi : midi 12h–14h30 / soir 19h–22h30\n" +
       "• Dimanche : midi 12h–14h30 (soir fermé)\n\n" +
-      "Fermeture annuelle : premières semaines d'août et entre Noël et Nouvel An.\n" +
+      "Ces horaires sont entièrement personnalisables.\n" +
       "La réservation est conseillée le week-end !",
 
     menu:
-      "Notre cuisine est généreuse et ancrée dans le terroir poitevin 🍽️\n\n" +
-      "Entrées (8–12€)\n" +
-      "Œufs mimosa maison, terrine de campagne, salade poitevine (mogettes, jambon, œuf), chèvre chaud au miel…\n\n" +
-      "Plats (14–22€)\n" +
-      "Steak frites sauce poivre, magret de canard, joue de bœuf braisée, filet de bar, poulet rôti fermier, mogettes au beurre (végétarien)…\n\n" +
-      "Desserts (6–8€)\n" +
-      "Tarte Tatin maison, crème brûlée, fondant au chocolat, île flottante…\n\n" +
-      "Menu du jour : 18€ (entrée + plat + dessert) — ardoise annoncée chaque matin sur Facebook.\n" +
-      "Menu midi semaine : 15€ (plat + café)\n" +
-      "Menu enfant (–12 ans) : 10€",
+      "Voici notre carte (exemple) 🍽️\n\n" +
+      "Entrées (à partir de 8€)\n" +
+      "• Entrée du jour\n" +
+      "• Soupe de saison\n" +
+      "• Assiette de charcuterie\n\n" +
+      "Plats (à partir de 14€)\n" +
+      "• Plat du jour\n" +
+      "• Pièce de viande du boucher\n" +
+      "• Poisson du marché\n\n" +
+      "Desserts (à partir de 6€)\n" +
+      "• Dessert du jour\n" +
+      "• Sélection de fromages affinés\n\n" +
+      "Menu du jour : entrée + plat + dessert\n" +
+      "(La carte s'adapte entièrement à votre restaurant)",
 
     adresse:
-      "Vous nous trouverez au cœur du village 📍\n\n" +
-      "12 Place de l'Église\n" +
-      "79210 Saint-Georges-de-Rex\n\n" +
-      "Parking gratuit juste devant le restaurant.\n" +
-      "La place du village est à 50 mètres si besoin.",
+      "Vous nous trouverez ici 📍\n\n" +
+      "Votre adresse\n" +
+      "Votre ville\n\n" +
+      "L'assistant peut afficher votre adresse exacte, vos indications de parking, et tout ce dont vos clients ont besoin.",
 
     prix:
-      "Voici notre gamme de prix :\n\n" +
-      "• Entrées : 8–12€\n" +
-      "• Plats : 14–22€\n" +
-      "• Desserts : 6–8€\n" +
-      "• Menu du jour : 18€ (entrée + plat + dessert)\n" +
-      "• Menu midi semaine : 15€ (plat + café)\n" +
-      "• Vin au verre à partir de 4€\n\n" +
+      "Voici notre gamme de prix (exemple) :\n\n" +
+      "• Entrées : à partir de 8€\n" +
+      "• Plats : à partir de 14€\n" +
+      "• Desserts : à partir de 6€\n" +
+      "• Menu du jour : entrée + plat + dessert\n\n" +
+      "Ces tarifs sont un exemple — l'assistant affiche vos vrais prix.\n" +
       "Une table vous ferait plaisir ?",
 
     enfants:
-      "Les enfants sont les bienvenus ! 🐴\n\n" +
+      "Les enfants sont les bienvenus ! 😊\n\n" +
       "Des chaises hautes sont disponibles sur demande.\n" +
-      "Menu enfant à 10€ pour les moins de 12 ans : petit plat + boisson + dessert.",
+      "Un menu enfant peut être proposé selon votre carte.",
 
     parking:
       "Pas de souci pour vous garer !\n\n" +
-      "Parking gratuit juste devant le restaurant.\n" +
-      "La place du village est à 50 mètres si besoin.",
+      "L'assistant peut indiquer à vos clients toutes vos informations de stationnement.",
 
     terrasse:
-      "Oui, nous avons une belle terrasse ombragée !\n\n" +
-      "Elle accueille une vingtaine de personnes et est ouverte d'avril à octobre, selon la météo.\n" +
-      "Les chiens y sont acceptés, tenus en laisse 🌿",
+      "Oui, nous disposons d'une terrasse !\n\n" +
+      "L'assistant peut préciser sa capacité, sa disponibilité selon les saisons, et si les animaux y sont acceptés.",
 
     regimes:
       "Nous nous adaptons à vos besoins !\n\n" +
-      "Des plats végétariens sont proposés à la carte : mogettes au beurre, risotto aux cèpes (en saison)…\n\n" +
-      "Pour toute allergie (gluten, lactose…), merci de nous le signaler à la réservation : notre cuisine s'adapte avec plaisir.",
+      "Des options végétariennes sont disponibles à la carte.\n\n" +
+      "Pour toute allergie (gluten, lactose…), signalez-le à la réservation : notre cuisine s'adapte avec plaisir.",
 
     animaux:
-      "Votre compagnon est le bienvenu… en terrasse ! 🐾\n\n" +
-      "Les chiens sont acceptés en terrasse, tenus en laisse.\n" +
-      "En salle, nous ne pouvons malheureusement pas les accueillir.",
+      "Votre compagnon est le bienvenu ! 🐾\n\n" +
+      "L'assistant peut préciser votre politique d'accueil des animaux, en terrasse ou en salle.",
 
     fallback:
       "Je n'ai pas bien compris votre question 😅 Voici ce que je peux vous aider à faire :",
 
     confirmationResa:
-      "Votre réservation est confirmée ! Un email récapitulatif vous a été envoyé. À très bientôt à L'Âne Arrosé 🐴",
+      "Votre réservation est confirmée ! 🎉 Un email récapitulatif vous a été envoyé. À très bientôt !",
 
     erreurResa:
       "Une erreur s'est produite lors de l'envoi 😕\n\n" +
-      "Appelez-nous directement au 05 49 XX XX XX, nous nous occupons de vous.",
+      "Appelez-nous directement au Votre numéro, nous nous occupons de vous.",
   };
-
-  /* Surcharge REP depuis localStorage si le restaurateur a modifié */
-  (function () {
-    try { var h = localStorage.getItem('ane_horaires'); if (h) { REP.horaires = buildHorairesText(JSON.parse(h)); } } catch (e) {}
-    try { var m = localStorage.getItem('ane_menu');     if (m) { REP.menu     = buildMenuText(JSON.parse(m));     } } catch (e) {}
-  })();
 
   /* ----------------------------------------------------------
      10 RÈGLES MOTS-CLÉS (mode normal)
@@ -133,17 +124,17 @@
      ÉTAT DE LA RÉSERVATION
      ---------------------------------------------------------- */
   var ETAT = {
-    mode:          'normal',     /* 'normal' | 'reservation' */
-    etape:         0,            /* 1 à 7 */
-    enTraitement:  false,        /* true pendant le délai bot → bloque double-envoi */
-    dateEnAttente: null,         /* date naturelle proposée, en attente de confirmation client */
+    mode:          'normal',
+    etape:         0,
+    enTraitement:  false,
+    dateEnAttente: null,
     donnees:       { nom: '', date: '', heure: '', personnes: '', telephone: '', email: '', message: '' },
   };
 
   /* Tooltip d'appel — état et timers */
-  var chatOpenedOnce = false; /* true dès que le chat est ouvert : tooltip ne reviendra plus */
-  var tipTimer1 = null;       /* setTimeout d'apparition (5 s) */
-  var tipTimer2 = null;       /* setTimeout de disparition auto (5 s) */
+  var chatOpenedOnce = false;
+  var tipTimer1 = null;
+  var tipTimer2 = null;
 
   /* ----------------------------------------------------------
      HELPERS
@@ -160,10 +151,6 @@
       .replace(/"/g,  "&quot;");
   }
 
-  /* Fix bug "Entrée ferme le chat" :
-     L'input n'est JAMAIS disabled (le focus resterait sur le bouton flottant).
-     Seul le bouton Envoyer est visuellement désactivé.
-     ETAT.enTraitement bloque les doubles envois. */
   function setInputDisabled(disabled) {
     ETAT.enTraitement = disabled;
     var send = document.getElementById("ane-chat-send");
@@ -203,7 +190,6 @@
 
   /* ----------------------------------------------------------
      BOUTONS D'ÉTAPE (temporaires — dans la zone messages)
-     Pour les choix : heure, nombre de personnes, "Non rien"
      ---------------------------------------------------------- */
   function showStepButtons(labels, onClickLabel) {
     removeStepButtons();
@@ -230,9 +216,6 @@
     var el = document.getElementById("ane-step-btns");
     if (el) {
       el.parentNode.removeChild(el);
-      /* CORRECTION BUG : après suppression du bouton d'étape, le focus
-         partait sur #ane-chat-btn → Entrée suivant fermait le chat.
-         On remet le focus sur l'input immédiatement. */
       var input = document.getElementById("ane-chat-input");
       if (input) { input.focus(); }
     }
@@ -266,7 +249,6 @@
     return d;
   }
 
-  /* Renvoie { ok: true, valeur } ou { ok: false, type: 'format'|'passe' } */
   function validerDate(texte) {
     var match = texte.trim().match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
     if (!match) { return { ok: false, type: 'format' }; }
@@ -282,45 +264,6 @@
     return { ok: true, valeur: texte.trim() };
   }
 
-  /* ----------------------------------------------------------
-     CONSTRUCTION DES RÉPONSES DEPUIS localStorage ADMIN
-     ---------------------------------------------------------- */
-  function buildHorairesText(h) {
-    var cles = ['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'];
-    var noms = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
-    var txt  = "Voici nos horaires :\n\n";
-    cles.forEach(function (cle, i) {
-      var d = h[cle]; if (!d) { return; }
-      var midiStr = d.midi && d.midi.ouvert ? 'midi ' + d.midi.debut + '–' + d.midi.fin : '';
-      var soirStr = d.soir && d.soir.ouvert ? 'soir ' + d.soir.debut + '–' + d.soir.fin : '';
-      var horaire;
-      if (midiStr && soirStr) { horaire = midiStr + ' / ' + soirStr; }
-      else if (midiStr)       { horaire = midiStr + ' (soir fermé)'; }
-      else if (soirStr)       { horaire = '(midi fermé) ' + soirStr; }
-      else                    { horaire = 'fermé'; }
-      txt += '• ' + noms[i] + ' : ' + horaire + '\n';
-    });
-    return txt +
-      "\nFermeture annuelle : premières semaines d'août et entre Noël et Nouvel An.\n" +
-      "La réservation est conseillée le week-end !";
-  }
-
-  function buildMenuText(m) {
-    function section(titre, items) {
-      if (!items || !items.length) { return ''; }
-      var s = titre + '\n';
-      items.forEach(function (p) { s += '• ' + p.nom + (p.prix ? ' (' + p.prix + ')' : '') + '\n'; });
-      return s + '\n';
-    }
-    return "Notre cuisine est généreuse et ancrée dans le terroir poitevin 🍽️\n\n" +
-      section('Entrées',  m.entrees)  +
-      section('Plats',    m.plats)    +
-      section('Desserts', m.desserts) +
-      "Menu du jour : 18€ (entrée + plat + dessert) — ardoise annoncée chaque matin sur Facebook.\n" +
-      "Menu midi semaine : 15€ (plat + café)\n" +
-      "Menu enfant (–12 ans) : 10€";
-  }
-
   /* Validation email basique */
   function validerEmail(texte) {
     var e = texte.trim();
@@ -330,8 +273,6 @@
   /* ----------------------------------------------------------
      RECONNAISSANCE DE DATE EN LANGAGE NATUREL
      ---------------------------------------------------------- */
-
-  /* Retourne la date au format JJ/MM/AAAA si le texte est reconnu, sinon null */
   function detecterDateNaturelle(texte) {
     var t = normalise(texte.trim());
     var d = new Date();
@@ -350,14 +291,12 @@
     return null;
   }
 
-  /* Retourne true si le texte exprime une confirmation (oui, ok…) */
   function estConfirmation(texte) {
     return /^(oui|ok|yes|ouais|parfait|correct|exactement|tout a fait|c est (ca|bon)|affirmatif)/.test(
       normalise(texte.trim())
     );
   }
 
-  /* Retourne true si le texte exprime un refus (non, changer…) */
   function estRefus(texte) {
     return /^(non|no|nope|pas ca|changer|incorrect)/.test(
       normalise(texte.trim())
@@ -368,17 +307,17 @@
   function buildAutoresponse(d) {
     var nb = d.personnes + " personne" + (d.personnes === "1" ? "" : "s");
     return "Bonjour " + d.nom + ",\n\n" +
-      "Votre réservation à L'Âne Arrosé est bien enregistrée.\n\n" +
+      "Votre réservation est bien enregistrée.\n\n" +
       "Récapitulatif :\n" +
       "• Date : " + d.date + "\n" +
       "• Heure : " + d.heure + "\n" +
       "• Personnes : " + nb + "\n" +
       "• Téléphone : " + d.telephone + "\n" +
       (d.message !== "Aucun message particulier" ? "• Message : " + d.message + "\n" : "") +
-      "\nÀ très bientôt à L'Âne Arrosé !\n\n" +
-      "L'équipe de L'Âne Arrosé\n" +
-      "12 Place de l'Église, 79210 Saint-Georges-de-Rex\n" +
-      "05 49 XX XX XX";
+      "\nÀ très bientôt !\n\n" +
+      "Votre Restaurant\n" +
+      "Votre adresse\n" +
+      "Votre numéro";
   }
 
   /* ----------------------------------------------------------
@@ -420,10 +359,8 @@
 
       case 2: /* Date — langage naturel ou format JJ/MM/AAAA */
 
-        /* ---- Sous-état : on attend oui/non pour une date naturelle ---- */
         if (ETAT.dateEnAttente) {
           if (estConfirmation(texte)) {
-            /* Confirmé → enregistrer et avancer */
             ETAT.donnees.date  = ETAT.dateEnAttente;
             ETAT.dateEnAttente = null;
             ETAT.etape         = 3;
@@ -436,7 +373,6 @@
               setInputDisabled(false);
             });
           } else if (estRefus(texte)) {
-            /* Refusé → reposer la question */
             ETAT.dateEnAttente = null;
             showTyping(function () {
               addMessage("bot",
@@ -446,7 +382,6 @@
               setInputDisabled(false);
             });
           } else {
-            /* Réponse ambiguë → reproposer avec boutons */
             var dateProposee = ETAT.dateEnAttente;
             showTyping(function () {
               addMessage("bot", "Je confirme bien le " + dateProposee + " ?");
@@ -457,7 +392,6 @@
           break;
         }
 
-        /* ---- Détecter une expression naturelle ---- */
         var dateNat = detecterDateNaturelle(texte);
         if (dateNat) {
           ETAT.dateEnAttente = dateNat;
@@ -469,7 +403,6 @@
           break;
         }
 
-        /* ---- Validation format JJ/MM/AAAA ---- */
         var vDate = validerDate(texte);
         if (!vDate.ok) {
           var msgDate = vDate.type === 'passe'
@@ -536,7 +469,7 @@
               "Cette adresse ne semble pas valide.\n" +
               "Merci d'entrer un email correct (ex : votre@email.fr)"
             );
-            setInputDisabled(false); /* reste à l'étape 6 */
+            setInputDisabled(false);
           });
           break;
         }
@@ -593,7 +526,6 @@
       envoyerWeb3Forms(d, function (succes) {
         var el = document.getElementById("ane-typing-envoi");
         if (el) { el.parentNode.removeChild(el); }
-        if (succes) { sauvegarderReservation(d); }
         addMessage("bot", succes ? REP.confirmationResa : REP.erreurResa);
         terminerReservation();
       });
@@ -606,9 +538,9 @@
       headers: { "Content-Type": "application/json", "Accept": "application/json" },
       body: JSON.stringify({
         access_key:   WEB3FORMS_KEY,
-        subject:      "Nouvelle réservation — " + d.nom + " — " + d.date + " à " + d.heure,
-        from_name:    "Widget L'Âne Arrosé",
-        email:        d.email,           /* déclenche l'autoresponse vers le client */
+        subject:      "Nouvelle réservation (démo) — " + d.nom + " — " + d.date + " à " + d.heure,
+        from_name:    "Widget Démo ChatBot Restaurant",
+        email:        d.email,
         replyto:      d.email,
         autoresponse: buildAutoresponse(d),
         Nom:          d.nom,
@@ -623,27 +555,6 @@
     .then(function (r)    { return r.json(); })
     .then(function (data) { callback(data.success === true); })
     .catch(function ()    { callback(false); });
-  }
-
-  function sauvegarderReservation(d) {
-    var cle   = 'ane_reservations';
-    var liste = [];
-    try {
-      var raw = localStorage.getItem(cle);
-      if (raw) { liste = JSON.parse(raw); }
-    } catch (e) {}
-    liste.unshift({
-      id:        Date.now(),
-      recu_le:   new Date().toLocaleString('fr-FR'),
-      nom:       d.nom,
-      date:      d.date,
-      heure:     d.heure,
-      personnes: d.personnes,
-      telephone: d.telephone,
-      email:     d.email,
-      message:   d.message,
-    });
-    try { localStorage.setItem(cle, JSON.stringify(liste)); } catch (e) {}
   }
 
   function terminerReservation() {
@@ -673,7 +584,7 @@
      ENVOI DU MESSAGE TEXTE
      ---------------------------------------------------------- */
   function sendMessage() {
-    if (ETAT.enTraitement) { return; }   /* bot encore en train de répondre */
+    if (ETAT.enTraitement) { return; }
     var input = document.getElementById("ane-chat-input");
     var texte = input.value.trim();
     if (!texte) { return; }
@@ -723,7 +634,6 @@
      OUVRIR / FERMER
      ---------------------------------------------------------- */
   function openChat() {
-    /* Marquer le chat comme ouvert + annuler / masquer le tooltip */
     chatOpenedOnce = true;
     clearTimeout(tipTimer1);
     clearTimeout(tipTimer2);
@@ -800,20 +710,15 @@
     /* ---- Tooltip d'appel ------------------------------------------------ */
     var tooltip = document.createElement('div');
     tooltip.id          = 'ane-tooltip';
-    tooltip.textContent = "Bonjour ! 🐴 Besoin d'une table ou d'infos ? Je suis là !";
+    tooltip.textContent = "Bonjour ! 👋 Envie de réserver une table ou une question sur notre carte ? Je vous réponds en quelques secondes !";
     document.body.appendChild(tooltip);
 
-    /* Apparaît après 5 s si le chat n'a jamais été ouvert */
     tipTimer1 = setTimeout(function () {
       if (chatOpenedOnce) { return; }
       tooltip.classList.add('visible');
-      /* Disparaît automatiquement après 5 s supplémentaires */
       tipTimer2 = setTimeout(function () { hideTooltip(); }, 5000);
     }, 5000);
 
-    /* Clic sur le tooltip → ouvrir le chat
-       stopPropagation indispensable : sans ça, l'événement remonte
-       jusqu'au document listener qui ferme le chat hors de #ane-chat-window */
     tooltip.addEventListener('click', function (e) {
       e.stopPropagation();
       clearTimeout(tipTimer1);
@@ -832,9 +737,6 @@
 
     btn.addEventListener("click", toggleChat);
 
-    /* CORRECTION : si le focus atterrit sur le bouton flottant pendant
-       que le chat est ouvert (ex. après suppression d'un bouton d'étape),
-       Entrée ne doit PAS fermer le chat — on remet le focus sur l'input. */
     btn.addEventListener("keydown", function (e) {
       if (e.key === "Enter" && win.classList.contains("open")) {
         e.preventDefault();
@@ -846,24 +748,17 @@
     document.getElementById("ane-chat-close").addEventListener("click", closeChat);
     document.getElementById("ane-chat-send").addEventListener("click", sendMessage);
 
-    /* Input — keydown : preventDefault + stopPropagation + sendMessage */
     document.getElementById("ane-chat-input").addEventListener("keydown", function (e) {
       if (e.key === "Enter") {
-        e.preventDefault();   /* empêche tout comportement par défaut */
-        e.stopPropagation();  /* empêche la remontée vers win / document */
+        e.preventDefault();
+        e.stopPropagation();
         sendMessage();
       }
     });
-    /* Input — keypress : ceinture et bretelles */
     document.getElementById("ane-chat-input").addEventListener("keypress", function (e) {
       if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); }
     });
 
-    /* Intercepte TOUS les Enter qui remontent jusqu'à la fenêtre de chat.
-       L'input appelle stopPropagation donc cet handler ne le voit PAS.
-       Pour les boutons internes (étapes, actions rapides, envoyer) :
-       - on bloque le clic synthétique natif du navigateur (preventDefault)
-       - on déclenche le clic manuellement pour rester maître du flux. */
     win.addEventListener("keydown", function (e) {
       if (e.key !== "Enter") { return; }
       e.preventDefault();
@@ -876,18 +771,11 @@
         closeChat();
       }
     });
-    /* Keypress au niveau de la fenêtre — bloque tout résidu */
     win.addEventListener("keypress", function (e) {
       if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); }
     });
 
     document.addEventListener("click", function (e) {
-      /* CORRECTION RACINE : un bouton d'étape (.ane-step-btn) se supprime
-         lui-même du DOM pendant son gestionnaire de clic. Après suppression,
-         win.contains(e.target) renvoie false → closeChat() se déclenchait
-         par erreur sur TOUS les clics de boutons d'étape (souris ET clavier).
-         e.composedPath() capture le chemin DOM au moment de la dispatchEvent,
-         avant toute suppression, et retourne donc bien win dans le chemin. */
       var path = e.composedPath ? e.composedPath() : [];
       var inWin = path.length ? path.indexOf(win) !== -1 : win.contains(e.target);
       var inBtn = path.length ? path.indexOf(btn) !== -1 : btn.contains(e.target);
@@ -906,8 +794,6 @@
 
   /* ----------------------------------------------------------
      HOOK — Boutons "Réserver" déjà présents sur la page hôte
-     Tout élément portant la classe .btn-reserve ouvre le chat
-     ET démarre directement le flux de réservation.
      ---------------------------------------------------------- */
   function hookReserveButtons() {
     var btns = document.querySelectorAll(".btn-reserve");
@@ -917,7 +803,6 @@
           e.preventDefault();
           e.stopPropagation();
           openChat();
-          /* Petit délai pour laisser le chat s'afficher avant de démarrer */
           setTimeout(function () { demarrerReservation(); }, 120);
         });
       })(btns[i]);
@@ -925,7 +810,7 @@
   }
 
   /* ----------------------------------------------------------
-     DÉMARRAGE
+     DÉMARRAGE — toujours actif sur la page de démo
      ---------------------------------------------------------- */
   function loadCSS() {
     var link = document.createElement("link");
@@ -936,8 +821,6 @@
   }
 
   function init() { loadCSS(); buildWidget(); hookReserveButtons(); }
-
-  if (localStorage.getItem('ane_actif') === '0') { return; }
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
